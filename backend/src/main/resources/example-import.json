@@ -1,0 +1,13 @@
+[
+  {
+    "occurredAt": "2026-09-20T14:02:03Z",
+    "source": "payment-service",
+    "level": "ERROR",
+    "eventType": "PAYMENT_TIMEOUT",
+    "message": "Payment provider timed out",
+    "requestId": "req-import-example",
+    "statusCode": 504,
+    "durationMs": 3000,
+    "details": "{\"provider\":\"sandbox-pay\"}"
+  }
+]

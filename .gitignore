@@ -1,0 +1,12 @@
+# Backend build output
+backend/target/
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+
+# Local configuration and editor files
+.env
+.idea/
+.vscode/
+*.log

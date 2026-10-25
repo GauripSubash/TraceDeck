@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-test:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: backend
+
+    # This database belongs only to this CI job and is discarded afterward.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: tracedeck_ci
+          POSTGRES_USER: tracedeck_ci
+          POSTGRES_PASSWORD: tracedeck_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U tracedeck_ci -d tracedeck_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    # Override local Spring settings without loading or creating a local .env.
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/tracedeck_ci
+      SPRING_DATASOURCE_USERNAME: tracedeck_ci
+      SPRING_DATASOURCE_PASSWORD: tracedeck_ci_password
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Java 21 and Maven cache
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: |
+            backend/pom.xml
+            backend/.mvn/wrapper/maven-wrapper.properties
+
+      # Windows checkouts may not record the Unix executable permission.
+      - name: Make Maven wrapper executable
+        run: chmod +x mvnw
+
+      - name: Run backend tests
+        run: ./mvnw -B test
+
+  frontend-checks:
+    name: Frontend checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      # Dataset tests also read data/ outside the frontend directory.
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node 24 and npm cache
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build

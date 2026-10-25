@@ -1,0 +1,37 @@
+[
+  {
+    "occurredAt": "2026-09-20T14:02:00Z",
+    "source": "web-gateway",
+    "level": "INFO",
+    "eventType": "REQUEST_RECEIVED",
+    "message": "Checkout request received",
+    "requestId": "req-context-example"
+  },
+  {
+    "occurredAt": "2026-09-20T14:02:01Z",
+    "source": "auth-service",
+    "level": "INFO",
+    "eventType": "AUTHENTICATION_PASSED",
+    "message": "User authenticated",
+    "requestId": "req-context-example"
+  },
+  {
+    "occurredAt": "2026-09-20T14:02:02Z",
+    "source": "payment-service",
+    "level": "WARN",
+    "eventType": "PAYMENT_PROVIDER_SLOW",
+    "message": "Payment provider response exceeded expected time",
+    "requestId": "req-context-example",
+    "durationMs": 2000
+  },
+  {
+    "occurredAt": "2026-09-20T14:02:03Z",
+    "source": "checkout-service",
+    "level": "ERROR",
+    "eventType": "CHECKOUT_FAILED",
+    "message": "Checkout failed after payment provider timeout",
+    "requestId": "req-context-example",
+    "statusCode": 504,
+    "durationMs": 3000
+  }
+]
